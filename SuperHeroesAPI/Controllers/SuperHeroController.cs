@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace SuperHeroesAPI.Controllers
 {
@@ -15,11 +17,13 @@ namespace SuperHeroesAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<List<SuperHero>>> Get()
         {
             return Ok(await _dataContext.SuperHeroes.ToListAsync());
         }
         [HttpGet("{id}")]
+        [Authorize]
         [ProducesResponseType(typeof(SuperHero), 200)]
         [ProducesResponseType(typeof(IDictionary<string, string>), 400)]
         public async Task<ActionResult<SuperHero>> Get(int id)
@@ -29,6 +33,7 @@ namespace SuperHeroesAPI.Controllers
             return Ok(hero);
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(SuperHero), 200)]
         [ProducesResponseType(typeof(IDictionary<string, string>), 400)]
         public async Task<ActionResult<List<SuperHero>>> AddHero(SuperHero hero)
@@ -38,6 +43,7 @@ namespace SuperHeroesAPI.Controllers
             return Ok(await _dataContext.SuperHeroes.ToListAsync()); 
         }
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<SuperHero>>> UpdateHero(SuperHero request)
         {
             var hero = await _dataContext.SuperHeroes.FindAsync(request.Id);
@@ -51,6 +57,7 @@ namespace SuperHeroesAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<SuperHero>> Delete(int id)
         {
             var hero = await _dataContext.SuperHeroes.FindAsync(id);
